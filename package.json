@@ -1,0 +1,14 @@
+{
+  "name": "fast-perennial-shots",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WebGPU first-person shooter demo: capture the flag of a wooden hill fort in power armour.",
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-levels.mjs",
+    "check-size": "node tools/check-size.mjs",
+    "serve": "node tools/serve.mjs",
+    "start": "node tools/build-levels.mjs && node tools/serve.mjs"
+  },
+  "license": "MIT"
+}

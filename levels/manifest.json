@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "levels": [
+    {
+      "id": "hillfort",
+      "name": "Hill Fort",
+      "files": [
+        {
+          "path": "levels/hillfort/level.json",
+          "bytes": 33722
+        },
+        {
+          "path": "levels/hillfort/models.bin",
+          "bytes": 1271068
+        }
+      ]
+    }
+  ]
+}

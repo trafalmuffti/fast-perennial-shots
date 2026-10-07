@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hill Fort — Power Armour FPS</title>
+<style>
+  :root {
+    --cyan: #6fe6ff;
+    --cyan-dim: rgba(111, 230, 255, 0.25);
+    --amber: #ffb347;
+    --red: #ff4d3d;
+    --ink: #e8f6ff;
+    --panel: rgba(6, 14, 20, 0.72);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #05080b; color: var(--ink); overflow: hidden;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; user-select: none; }
+  #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .hidden { display: none !important; }
+
+  /* ---------- screens ---------- */
+  .screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 20; }
+  .screen.dim { background: radial-gradient(ellipse at center, rgba(4, 10, 16, 0.55), rgba(2, 4, 8, 0.92)); }
+  .card { width: min(560px, calc(100vw - 32px)); padding: 28px 32px; background: var(--panel);
+    border: 1px solid var(--cyan-dim); border-radius: 6px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+  h1 { margin: 0 0 4px; font-size: 30px; letter-spacing: 0.12em; font-weight: 700; color: var(--cyan); }
+  h2 { margin: 0 0 18px; font-size: 13px; letter-spacing: 0.3em; font-weight: 600; color: #9fb7c4; text-transform: uppercase; }
+  p { line-height: 1.5; color: #c7d7e0; }
+  button { font: inherit; font-weight: 700; letter-spacing: 0.15em; padding: 12px 22px; margin-top: 8px; cursor: pointer;
+    color: #031015; background: var(--cyan); border: 0; border-radius: 3px; text-transform: uppercase; }
+  button.ghost { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); margin-left: 8px; }
+  button:hover { filter: brightness(1.15); }
+  .controls { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13px; color: #a9bfcb; margin: 16px 0 18px; }
+  .controls kbd { font-family: inherit; font-weight: 700; color: var(--ink); background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 3px; padding: 1px 6px; font-size: 12px; white-space: nowrap; }
+
+  #loading { background: #05080b; flex-direction: column; }
+  #loading .card { text-align: center; }
+  .bar { height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden; margin: 18px 0 10px; }
+  .bar > div { height: 100%; width: 0; background: linear-gradient(90deg, #2bb3d6, var(--cyan)); transition: width 0.1s; }
+  #load-text { font-variant-numeric: tabular-nums; font-size: 15px; }
+  #load-file { font-size: 12px; color: #7d929e; margin-top: 4px; min-height: 1em; }
+  #load-error { color: #ffb0a6; margin-top: 14px; }
+
+  .stats { margin: 14px 0 18px; }
+  .stats div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+  .stats span { color: #9fb7c4; }
+  #end { background: #000; }
+  #end .card { animation: rise 1.2s ease-out; }
+  #death { background: rgba(40, 0, 0, 0.6); }
+  #death h1 { color: var(--red); }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- HUD ---------- */
+  #hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8); }
+  #visor { position: absolute; inset: 0;
+    background: radial-gradient(ellipse 75% 70% at center, transparent 62%, rgba(10, 30, 40, 0.35) 85%, rgba(0, 0, 0, 0.75) 100%); }
+  #crosshair { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; transform: translate(-50%, -50%); }
+  #crosshair::before, #crosshair::after { content: ""; position: absolute; background: var(--cyan); box-shadow: 0 0 4px var(--cyan); }
+  #crosshair::before { left: 14px; top: 0; width: 2px; height: 30px;
+    -webkit-mask: linear-gradient(#000 0 10px, transparent 10px 20px, #000 20px); mask: linear-gradient(#000 0 10px, transparent 10px 20px, #000 20px); }
+  #crosshair::after { top: 14px; left: 0; height: 2px; width: 30px;
+    -webkit-mask: linear-gradient(90deg, #000 0 10px, transparent 10px 20px, #000 20px); mask: linear-gradient(90deg, #000 0 10px, transparent 10px 20px, #000 20px); }
+  #hitmarker { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
+  #hitmarker::before, #hitmarker::after { content: ""; position: absolute; background: #fff; }
+  #hitmarker::before { left: 12px; top: 0; width: 2px; height: 26px; }
+  #hitmarker::after { top: 12px; left: 0; height: 2px; width: 26px; }
+  #hitmarker.strong::before, #hitmarker.strong::after { background: var(--red); }
+
+  .panel { position: absolute; padding: 10px 14px; background: rgba(4, 14, 20, 0.45); border: 1px solid var(--cyan-dim); border-radius: 4px; }
+  #vitals { left: 24px; bottom: 24px; width: 290px; }
+  .label { font-size: 11px; letter-spacing: 0.2em; color: #9fb7c4; display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .label b { color: var(--ink); font-size: 13px; }
+  .meter { height: 10px; background: rgba(255, 255, 255, 0.08); margin-bottom: 9px; clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%); }
+  .meter > div { height: 100%; transition: width 0.08s linear; }
+  #shield-fill { background: linear-gradient(90deg, #2aa8d0, var(--cyan)); box-shadow: 0 0 8px var(--cyan); }
+  #hull-fill { background: linear-gradient(90deg, #d07a1f, var(--amber)); }
+  #jets-fill { background: #b8c8d0; }
+  .meter.thin { height: 4px; margin-bottom: 0; }
+  #hud.shield-down #shield-label { color: var(--red); animation: blink 0.5s steps(2) infinite; }
+  #hud.hull-low #hull-fill { background: var(--red); }
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  #weapon { right: 24px; bottom: 24px; text-align: right; min-width: 200px; }
+  #weapon-name { font-size: 11px; letter-spacing: 0.2em; color: #9fb7c4; }
+  #ammo-mag { font-size: 44px; font-weight: 700; line-height: 1; color: var(--ink); }
+  #ammo-mag.low { color: var(--amber); }
+  #ammo-reserve { font-size: 20px; color: #9fb7c4; margin-left: 6px; }
+  #reload { position: absolute; left: 50%; top: calc(50% + 46px); transform: translateX(-50%); font-size: 12px;
+    letter-spacing: 0.25em; color: var(--amber); opacity: 0; }
+  #reload.on { opacity: 1; }
+
+  #objective-box { left: 24px; top: 24px; }
+  #objective { font-size: 14px; letter-spacing: 0.08em; }
+  #hostiles { font-size: 12px; letter-spacing: 0.2em; color: var(--amber); margin-top: 4px; }
+  #killfeed { position: absolute; right: 24px; top: 24px; text-align: right; font-size: 13px; }
+  #killfeed div { background: rgba(4, 14, 20, 0.55); padding: 4px 10px; margin-bottom: 4px; border-right: 2px solid var(--cyan); animation: rise 0.3s; }
+
+  #compass { position: absolute; left: 50%; top: 18px; width: 360px; height: 22px; transform: translateX(-50%);
+    background-image: repeating-linear-gradient(90deg, rgba(111, 230, 255, 0.6) 0 1px, transparent 1px 20px);
+    -webkit-mask: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }
+  #compass::after { content: attr(data-heading) "°"; position: absolute; left: 50%; top: 24px; transform: translateX(-50%); font-size: 11px; color: var(--cyan); }
+
+  #prompt { position: absolute; left: 50%; top: 62%; transform: translateX(-50%); font-size: 15px; letter-spacing: 0.2em;
+    padding: 8px 16px; background: rgba(4, 14, 20, 0.6); border: 1px solid var(--cyan); opacity: 0; }
+  #prompt.on { opacity: 1; }
+  #capture { position: absolute; left: 50%; top: calc(62% + 46px); width: 280px; height: 6px; transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.12); opacity: 0; }
+  #capture.on { opacity: 1; }
+  #capture-fill { height: 100%; width: 0; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+  #message { position: absolute; left: 50%; top: 26%; transform: translateX(-50%); font-size: 30px; font-weight: 700;
+    letter-spacing: 0.3em; color: var(--cyan); opacity: 0; transition: opacity 0.4s; white-space: nowrap; }
+  #message.on { opacity: 1; }
+
+  #shield-fx { position: absolute; inset: 0; opacity: 0;
+    box-shadow: inset 0 0 120px 30px rgba(111, 230, 255, 0.55); background: radial-gradient(ellipse at center, transparent 55%, rgba(111, 230, 255, 0.18)); }
+  #hull-fx { position: absolute; inset: 0; opacity: 0; box-shadow: inset 0 0 160px 50px rgba(255, 40, 20, 0.6); }
+  #damage-dirs { position: absolute; left: 50%; top: 50%; }
+  .dmg-dir { position: absolute; left: 0; top: 0; width: 90px; height: 16px; border-radius: 50% 50% 0 0;
+    border-top: 5px solid var(--red); filter: drop-shadow(0 0 6px var(--red)); }
+  .dmg-dir.shield { border-top-color: var(--cyan); filter: drop-shadow(0 0 6px var(--cyan)); }
+
+  @media (max-width: 700px) {
+    #vitals { width: 200px; left: 12px; bottom: 12px; }
+    #weapon { right: 12px; bottom: 12px; min-width: 0; }
+    #compass { width: 220px; }
+    #message { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="visor"></div>
+  <div id="shield-fx"></div>
+  <div id="hull-fx"></div>
+  <div id="compass"></div>
+  <div id="crosshair"></div>
+  <div id="hitmarker"></div>
+  <div id="damage-dirs"></div>
+  <div id="reload"></div>
+  <div id="prompt"></div>
+  <div id="capture"><div id="capture-fill"></div></div>
+  <div id="message"></div>
+  <div id="killfeed"></div>
+  <div id="objective-box" class="panel">
+    <div id="objective"></div>
+    <div id="hostiles"></div>
+  </div>
+  <div id="vitals" class="panel">
+    <div class="label" id="shield-label">SHIELD <b id="shield-val">100</b></div>
+    <div class="meter"><div id="shield-fill"></div></div>
+    <div class="label">ARMOUR <b id="hull-val">100</b></div>
+    <div class="meter"><div id="hull-fill"></div></div>
+    <div class="label">JUMP JETS</div>
+    <div class="meter thin"><div id="jets-fill"></div></div>
+  </div>
+  <div id="weapon" class="panel">
+    <div id="weapon-name">PA-9 PULSE RIFLE</div>
+    <span id="ammo-mag">32</span><span id="ammo-reserve">192</span>
+  </div>
+</div>
+
+<div id="loading" class="screen">
+  <div class="card">
+    <h1>HILL FORT</h1>
+    <h2>Loading level data</h2>
+    <div class="bar"><div id="load-bar"></div></div>
+    <div id="load-text">Downloaded 0.00 MB</div>
+    <div id="load-file"></div>
+    <div id="load-error" class="hidden"></div>
+  </div>
+</div>
+
+<div id="start" class="screen dim hidden">
+  <div class="card">
+    <h1 id="level-name">HILL FORT</h1>
+    <h2>Operation: Timberline — Level 1</h2>
+    <p id="briefing"></p>
+    <div class="controls">
+      <kbd>W A S D</kbd><span>Move</span>
+      <kbd>Mouse</kbd><span>Look · Left click fire · Right click aim</span>
+      <kbd>Shift</kbd><span>Sprint</span>
+      <kbd>Space</kbd><span>Jump · hold in the air for jump jets</span>
+      <kbd>R</kbd><span>Reload</span>
+      <kbd>E (hold)</kbd><span>Capture the flag at its pole</span>
+      <kbd>Esc</kbd><span>Pause</span>
+    </div>
+    <p style="font-size:13px">Your energy shield absorbs fire and recharges when you avoid damage. Armour does not regenerate.</p>
+    <button id="btn-deploy">Deploy</button>
+  </div>
+</div>
+
+<div id="pause" class="screen dim hidden">
+  <div class="card" style="text-align:center">
+    <h1>PAUSED</h1>
+    <h2>Click to resume</h2>
+  </div>
+</div>
+
+<div id="end" class="screen hidden">
+  <div class="card">
+    <h1>FORT CAPTURED</h1>
+    <h2>Mission complete</h2>
+    <div class="stats" id="end-stats"></div>
+    <p id="end-next-note">This demo contains one level. More forts await.</p>
+    <button id="btn-replay">Play again</button><button id="btn-next" class="ghost hidden">Next level</button>
+  </div>
+</div>
+
+<div id="death" class="screen hidden">
+  <div class="card">
+    <h1>ARMOUR BREACHED</h1>
+    <h2>Mission failed</h2>
+    <div class="stats" id="death-stats"></div>
+    <button id="btn-retry">Retry</button>
+  </div>
+</div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
