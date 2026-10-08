@@ -3,7 +3,7 @@
 import { mat4 } from './math.js';
 import { VERTEX_STRIDE } from './modelpack.js';
 
-const MAX_INSTANCES = 8192;
+const MAX_INSTANCES = 24576;
 const INSTANCE_FLOATS = 20; // mat4 + tint vec4
 const SHADOW_SIZE = 2048;
 

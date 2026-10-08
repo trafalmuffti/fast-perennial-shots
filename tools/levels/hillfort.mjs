@@ -279,7 +279,7 @@ export function build() {
     player: { spawn: [0, r3(hf.sample(0, spawnZ)), spawnZ], yaw: 0 },
     // Decorative instances scattered at load time (no colliders, no JSON bloat).
     scatter: [
-      { models: ['grass_a', 'grass_b', 'grass_c'], count: 4500, seed: 71, radius: 95, scale: [0.8, 1.5], sink: 0.03, exclude: [[-24, -24, 24, 24], [-4.5, 20, 4.5, 130]] },
+      { models: ['grass_a', 'grass_b', 'grass_c'], count: 14000, seed: 71, radius: 85, scale: [1.3, 2.4], sink: 0.03, exclude: [[-24, -24, 24, 24], [-4.5, 20, 4.5, 130]] },
       { models: ['bush_a', 'bush_b'], count: 70, seed: 72, radius: 110, minRadius: 27, scale: [0.7, 1.4], sink: 0.1, exclude: [[-9, 18, 9, 130]] },
     ],
     flag: {
