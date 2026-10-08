@@ -122,7 +122,8 @@ The engine is level‑agnostic. To add a level:
    `tools/lib/props.mjs` can be reused.
 2. Add the module to `LEVELS` in `tools/build-levels.mjs` (order = play order).
 3. Run `npm run build`. The manifest gets the new entry, the end screen shows
-   **Next level**, and `?level=<id>` opens a level directly.
+   **Next level**, and `?level=<id>` opens a level directly. `?scatter=0.5`
+   halves grass and bush density for weaker GPUs.
 
 New enemy weapons go in `ENEMY_WEAPONS` (`src/weapons.js`). Levels choose an
 enemy's weapon, role (`breacher`, `sentry`, `patrol`, `marksman`), uniform tint,

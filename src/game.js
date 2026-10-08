@@ -36,7 +36,9 @@ export class Game {
     this.fade = 0;
     // Static scenery matrices are built once.
     this.statics = level.instances.map((i) => ({ model: i.model, m: mat4.trs(i.pos, i.rot || 0, i.scale || 1) }));
-    if (!new URLSearchParams(location.search).has('noscatter')) this.statics.push(...scatterDecor(level, this.world, pack.models));
+    // ?scatter=0.5 halves grass/bush density (0 disables) for weaker GPUs.
+    const density = Number(new URLSearchParams(location.search).get('scatter') ?? 1);
+    if (density > 0) this.statics.push(...scatterDecor(level, this.world, pack.models, density));
     hud.setObjective('OBJECTIVE: Capture the fort\'s flag');
     hud.message(level.name.toUpperCase(), 3.5);
   }
@@ -212,13 +214,14 @@ export class Game {
 
 // Decorative clutter (grass, bushes) placed deterministically at load time
 // from the level's `scatter` rules, so the level file stays small.
-function scatterDecor(level, world, models) {
+function scatterDecor(level, world, models, density = 1) {
   const out = [];
   for (const rule of level.scatter || []) {
     const rand = rng(rule.seed || 1);
     const grass = [1, 1, 1, MODE_GRASS];
     let placed = 0, guard = 0;
-    while (placed < rule.count && guard++ < rule.count * 4) {
+    const count = Math.round(rule.count * density);
+    while (placed < count && guard++ < count * 4) {
       const x = (rand() * 2 - 1) * rule.radius, z = (rand() * 2 - 1) * rule.radius;
       const r = Math.hypot(x, z);
       if (r > rule.radius || r < (rule.minRadius || 0)) continue;
