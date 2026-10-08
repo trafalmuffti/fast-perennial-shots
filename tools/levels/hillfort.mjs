@@ -4,6 +4,7 @@ import { MeshBuilder, hex } from '../lib/mesh.mjs';
 import * as P from '../lib/props.mjs';
 import { Heightfield } from '../../src/terrain.js';
 import { rng, smoothstep } from '../../src/math.js';
+import { MAT } from '../../src/materials.js';
 
 export const id = 'hillfort';
 
@@ -54,7 +55,8 @@ function buildTerrain() {
   }
   const hf = new Heightfield(heights, res, size);
   const m = new MeshBuilder(7);
-  const grassA = hex(0x4d7330), grassB = hex(0x6f8c3c), dirt = hex(0x7d6748), rockC = hex(0x6f6a62), road = hex(0x8a7454);
+  m.mat = MAT.GROUND;
+  const grassA = hex(0x4a6e2c), grassB = hex(0x7a9440), dirt = hex(0x7d6748), rockC = hex(0x6f6a62), road = hex(0x8c7656);
   const ids = [];
   for (let j = 0; j < res; j++) {
     for (let i = 0; i < res; i++) {
@@ -130,8 +132,14 @@ export function build() {
     ammo_box: P.ammoBox(),
     pine_a: P.pine(31, 9),
     pine_b: P.pine(32, 12),
+    pine_c: P.pine(33, 10.5),
     rock_a: P.rock(41),
     rock_b: P.rock(42),
+    bush_a: P.bush(51),
+    bush_b: P.bush(52),
+    grass_a: P.grassTuft(61),
+    grass_b: P.grassTuft(62),
+    grass_c: P.grassTuft(63),
     dais: P.dais(),
     flagpole: P.flagpole(9.5),
     flag_cloth: P.flagCloth(),
@@ -235,7 +243,7 @@ export function build() {
     if (r < 41) continue;
     if (Math.abs(x) < 11 && z > 15) continue; // keep the approach road clear
     if (Math.hypot(x, z - 100) < 14) continue;
-    place(rand() < 0.5 ? 'pine_a' : 'pine_b', x, ground(x, z, 0.3), z, rand() * Math.PI * 2, { scale: r3(0.8 + rand() * 0.5) });
+    place(['pine_a', 'pine_b', 'pine_c'][Math.floor(rand() * 3)], x, ground(x, z, 0.3), z, rand() * Math.PI * 2, { scale: r3(0.8 + rand() * 0.5) });
     trees++;
   }
   let rocks = 0;
@@ -257,18 +265,23 @@ export function build() {
     terrain: { model: 'terrain', blob: 'heights', res: TERRAIN_RES, size: TERRAIN_SIZE },
     bounds: { min: [-120, -10, -120], max: [120, 80, 120] },
     environment: {
-      sunDir: [0.45, 0.72, 0.38],
-      sunColor: [1.0, 0.92, 0.78],
-      sunIntensity: 2.6,
-      skyTop: [0.26, 0.45, 0.72],
-      skyHorizon: [0.72, 0.8, 0.86],
-      groundAmbient: [0.36, 0.32, 0.26],
-      ambient: 0.55,
-      fogDensity: 0.0065,
+      sunDir: [0.45, 0.62, 0.38],
+      sunColor: [1.0, 0.9, 0.74],
+      sunIntensity: 3.0,
+      skyTop: [0.22, 0.42, 0.72],
+      skyHorizon: [0.68, 0.77, 0.86],
+      groundAmbient: [0.34, 0.3, 0.24],
+      ambient: 0.42,
+      fogDensity: 0.0028,
       shadowCenter: [0, H0, 10],
       shadowRadius: 75,
     },
     player: { spawn: [0, r3(hf.sample(0, spawnZ)), spawnZ], yaw: 0 },
+    // Decorative instances scattered at load time (no colliders, no JSON bloat).
+    scatter: [
+      { models: ['grass_a', 'grass_b', 'grass_c'], count: 4500, seed: 71, radius: 95, scale: [0.8, 1.5], sink: 0.03, exclude: [[-24, -24, 24, 24], [-4.5, 20, 4.5, 130]] },
+      { models: ['bush_a', 'bush_b'], count: 70, seed: 72, radius: 110, minRadius: 27, scale: [0.7, 1.4], sink: 0.1, exclude: [[-9, 18, 9, 130]] },
+    ],
     flag: {
       pole: [0, H0 + 0.5, -10],
       poleHeight: 9.5,

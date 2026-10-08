@@ -1,11 +1,11 @@
 // One play session of a level: owns the player, enemies, pickups, effects and
 // the flag objective, and drives the end-of-level sequence.
-import { mat4, v3, yawTo, smoothstep } from './math.js';
+import { mat4, v3, yawTo, smoothstep, rng } from './math.js';
 import { World } from './world.js';
 import { Player } from './player.js';
 import { Enemy } from './enemies.js';
 import { Effects } from './effects.js';
-import { MODE_WAVE, WHITE_LIT } from './renderer.js';
+import { MODE_WAVE, MODE_GRASS, WHITE_LIT } from './renderer.js';
 
 export class Game {
   // assets: { level, pack, world? } — world can be reused between restarts.
@@ -36,6 +36,7 @@ export class Game {
     this.fade = 0;
     // Static scenery matrices are built once.
     this.statics = level.instances.map((i) => ({ model: i.model, m: mat4.trs(i.pos, i.rot || 0, i.scale || 1) }));
+    if (!new URLSearchParams(location.search).has('noscatter')) this.statics.push(...scatterDecor(level, this.world, pack.models));
     hud.setObjective('OBJECTIVE: Capture the fort\'s flag');
     hud.message(level.name.toUpperCase(), 3.5);
   }
@@ -186,7 +187,7 @@ export class Game {
     const r = this.renderer;
     const aspect = r.resize();
     const cam = this.player.camera(aspect);
-    for (const s of this.statics) r.draw(s.model, s.m);
+    for (const s of this.statics) r.draw(s.model, s.m, s.tint);
 
     // Flag cloth (wave mode) at its current height on the pole.
     const f = this.flag;
@@ -207,4 +208,30 @@ export class Game {
     else if (this.state === 'dead') flash = [0.25, 0.0, 0.0, Math.min(0.85, this.stateT / 2.5)];
     r.render(cam, flash);
   }
+}
+
+// Decorative clutter (grass, bushes) placed deterministically at load time
+// from the level's `scatter` rules, so the level file stays small.
+function scatterDecor(level, world, models) {
+  const out = [];
+  for (const rule of level.scatter || []) {
+    const rand = rng(rule.seed || 1);
+    const grass = [1, 1, 1, MODE_GRASS];
+    let placed = 0, guard = 0;
+    while (placed < rule.count && guard++ < rule.count * 4) {
+      const x = (rand() * 2 - 1) * rule.radius, z = (rand() * 2 - 1) * rule.radius;
+      const r = Math.hypot(x, z);
+      if (r > rule.radius || r < (rule.minRadius || 0)) continue;
+      if ((rule.exclude || []).some(([x0, z0, x1, z1]) => x > x0 && x < x1 && z > z0 && z < z1)) continue;
+      const n = world.terrain.normal(x, z);
+      if (n[1] < 0.8) continue; // not on cliffs
+      const model = rule.models[Math.floor(rand() * rule.models.length)];
+      const [s0, s1] = rule.scale || [1, 1];
+      const y = world.terrain.sample(x, z) - (rule.sink || 0);
+      const tint = model.startsWith('grass') ? grass : WHITE_LIT;
+      out.push({ model, m: mat4.trs([x, y, z], rand() * Math.PI * 2, s0 + rand() * (s1 - s0)), tint });
+      placed++;
+    }
+  }
+  return out;
 }

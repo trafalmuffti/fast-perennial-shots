@@ -13,6 +13,15 @@ export class MeshBuilder {
     this.stack = [mat4.create()];
     this.rand = rng(seed);
     this.tint = false; // when true, emitted vertices are tintable per instance
+    this.mat = 0; // material id written into normal.w (see src/materials.js)
+  }
+
+  material(id, fn) {
+    const prev = this.mat;
+    this.mat = id;
+    fn(this);
+    this.mat = prev;
+    return this;
   }
 
   get m() {
@@ -54,7 +63,7 @@ export class MeshBuilder {
     const wp = mat4.transformPoint(this.m, p);
     const wn = v3.norm(mat4.transformDir(this.m, n));
     this.pos.push(wp);
-    this.nrm.push(wn);
+    this.nrm.push([wn[0], wn[1], wn[2], this.mat]);
     this.col.push([c[0], c[1], c[2], this.tint ? 1 : 0]);
     return this.pos.length - 1;
   }
@@ -100,7 +109,8 @@ export class MeshBuilder {
   }
 
   // Cylinder / cone / frustum along +Y starting at (cx, cy, cz).
-  cylinder(cx, cy, cz, r, h, seg, color, { r2 = r, capTop = true, capBottom = false, jitter = 0 } = {}) {
+  // `bump(angle01, end)` optionally returns a radius multiplier for organic shapes.
+  cylinder(cx, cy, cz, r, h, seg, color, { r2 = r, capTop = true, capBottom = false, jitter = 0, bump = null, colorFn = null } = {}) {
     const col = this.jitterColor(color, jitter);
     const slope = (r - r2) / h;
     const ring0 = [], ring1 = [];
@@ -108,10 +118,10 @@ export class MeshBuilder {
       const a = (i / seg) * Math.PI * 2;
       const ca = Math.cos(a), sa = Math.sin(a);
       const n = v3.norm([ca, slope, sa]);
-      const shade = 0.85 + 0.15 * Math.max(0, ca);
-      const c = v3.scale(col, shade);
-      ring0.push(this.vert([cx + ca * r, cy, cz + sa * r], n, c));
-      ring1.push(this.vert([cx + ca * r2, cy + h, cz + sa * r2], n, c));
+      const k0 = bump ? bump((i % seg) / seg, 0) : 1, k1 = bump ? bump((i % seg) / seg, 1) : 1;
+      const c = colorFn ? colorFn((i % seg) / seg) : col;
+      ring0.push(this.vert([cx + ca * r * k0, cy, cz + sa * r * k0], n, c));
+      ring1.push(this.vert([cx + ca * r2 * k1, cy + h, cz + sa * r2 * k1], n, c));
     }
     for (let i = 0; i < seg; i++) {
       const a = (i / seg + 0.5 / seg) * Math.PI * 2;
@@ -122,12 +132,13 @@ export class MeshBuilder {
     const cap = (y, rr, up) => {
       if (rr <= 0) return;
       const n = [0, up ? 1 : -1, 0];
-      const c = v3.scale(col, up ? 1.05 : 0.7);
+      const c = v3.scale(col, up ? 1.0 : 0.85);
       const center = this.vert([cx, y, cz], n, c);
       const ring = [];
       for (let i = 0; i <= seg; i++) {
         const a = (i / seg) * Math.PI * 2;
-        ring.push(this.vert([cx + Math.cos(a) * rr, y, cz + Math.sin(a) * rr], n, c));
+        const k = bump ? bump((i % seg) / seg, up ? 1 : 0) : 1;
+        ring.push(this.vert([cx + Math.cos(a) * rr * k, y, cz + Math.sin(a) * rr * k], n, c));
       }
       const hint = v3.norm(mat4.transformDir(this.m, n));
       for (let i = 0; i < seg; i++) this.tri(center, ring[i], ring[i + 1], hint);
@@ -146,7 +157,8 @@ export class MeshBuilder {
   }
 
   // Low poly UV sphere.
-  sphere(cx, cy, cz, r, seg, rings, color, sy = 1) {
+  // `bump(u, v)` returns a radius multiplier; `colorFn(u, v)` a colour.
+  sphere(cx, cy, cz, r, seg, rings, color, sy = 1, { bump = null, colorFn = null } = {}) {
     const grid = [];
     for (let j = 0; j <= rings; j++) {
       const phi = (j / rings) * Math.PI;
@@ -154,7 +166,9 @@ export class MeshBuilder {
       for (let i = 0; i <= seg; i++) {
         const th = (i / seg) * Math.PI * 2;
         const n = [Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th)];
-        row.push(this.vert([cx + n[0] * r, cy + n[1] * r * sy, cz + n[2] * r], n, color));
+        const k = bump ? bump((i % seg) / seg, j / rings) : 1;
+        const c = colorFn ? colorFn((i % seg) / seg, j / rings) : color;
+        row.push(this.vert([cx + n[0] * r * k, cy + n[1] * r * sy * k, cz + n[2] * r * k], n, c));
       }
       grid.push(row);
     }
@@ -259,7 +273,7 @@ export function writeModelPack(models, blobs = {}) {
       dv.setInt8(v + 12, Math.round(nrm[i][0] * 127));
       dv.setInt8(v + 13, Math.round(nrm[i][1] * 127));
       dv.setInt8(v + 14, Math.round(nrm[i][2] * 127));
-      dv.setInt8(v + 15, 0);
+      dv.setInt8(v + 15, nrm[i][3] || 0);
       dv.setUint8(v + 16, clampByte(col[i][0] * 255));
       dv.setUint8(v + 17, clampByte(col[i][1] * 255));
       dv.setUint8(v + 18, clampByte(col[i][2] * 255));

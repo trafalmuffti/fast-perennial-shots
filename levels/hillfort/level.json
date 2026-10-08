@@ -24,32 +24,32 @@
  "environment": {
   "sunDir": [
    0.45,
-   0.72,
+   0.62,
    0.38
   ],
   "sunColor": [
    1,
-   0.92,
-   0.78
+   0.9,
+   0.74
   ],
-  "sunIntensity": 2.6,
+  "sunIntensity": 3,
   "skyTop": [
-   0.26,
-   0.45,
+   0.22,
+   0.42,
    0.72
   ],
   "skyHorizon": [
-   0.72,
-   0.8,
+   0.68,
+   0.77,
    0.86
   ],
   "groundAmbient": [
-   0.36,
-   0.32,
-   0.26
+   0.34,
+   0.3,
+   0.24
   ],
-  "ambient": 0.55,
-  "fogDensity": 0.0065,
+  "ambient": 0.42,
+  "fogDensity": 0.0028,
   "shadowCenter": [
    0,
    10,
@@ -65,6 +65,60 @@
   ],
   "yaw": 0
  },
+ "scatter": [
+  {
+   "models": [
+    "grass_a",
+    "grass_b",
+    "grass_c"
+   ],
+   "count": 4500,
+   "seed": 71,
+   "radius": 95,
+   "scale": [
+    0.8,
+    1.5
+   ],
+   "sink": 0.03,
+   "exclude": [
+    [
+     -24,
+     -24,
+     24,
+     24
+    ],
+    [
+     -4.5,
+     20,
+     4.5,
+     130
+    ]
+   ]
+  },
+  {
+   "models": [
+    "bush_a",
+    "bush_b"
+   ],
+   "count": 70,
+   "seed": 72,
+   "radius": 110,
+   "minRadius": 27,
+   "scale": [
+    0.7,
+    1.4
+   ],
+   "sink": 0.1,
+   "exclude": [
+    [
+     -9,
+     18,
+     9,
+     130
+    ]
+   ]
+  }
+ ],
  "flag": {
   "pole": [
    0,
@@ -1576,7 +1630,7 @@
    "solid": true
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -100.702,
     0.447,
@@ -1587,7 +1641,7 @@
    "scale": 0.82
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -90.208,
     0.978,
@@ -1598,7 +1652,7 @@
    "scale": 0.864
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     10.456,
     8.735,
@@ -1609,7 +1663,7 @@
    "scale": 0.932
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -96.353,
     2.723,
@@ -1631,7 +1685,7 @@
    "scale": 1.08
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     23.665,
     1.501,
@@ -1642,7 +1696,7 @@
    "scale": 0.888
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     7.358,
     9.127,
@@ -1686,7 +1740,7 @@
    "scale": 1.055
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     7.882,
     6.482,
@@ -1708,7 +1762,7 @@
    "scale": 1.14
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -81.589,
     0.044,
@@ -1719,7 +1773,7 @@
    "scale": 1.03
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     112.052,
     5.315,
@@ -1730,7 +1784,7 @@
    "scale": 1.185
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     27.263,
     7.421,
@@ -1752,7 +1806,7 @@
    "scale": 1.149
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     117.004,
     8.455,
@@ -1763,7 +1817,7 @@
    "scale": 0.899
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -56.557,
     2.615,
@@ -1785,7 +1839,7 @@
    "scale": 1.016
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     109.675,
     4.67,
@@ -1796,7 +1850,7 @@
    "scale": 1.218
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -113.343,
     5.805,
@@ -1829,7 +1883,7 @@
    "scale": 1.009
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -101.93,
     0.679,
@@ -1840,7 +1894,7 @@
    "scale": 0.992
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     10.558,
     -0.188,
@@ -1862,7 +1916,7 @@
    "scale": 1.168
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     22.859,
     -0.041,
@@ -1873,7 +1927,7 @@
    "scale": 0.925
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -45.707,
     2.237,
@@ -1884,7 +1938,7 @@
    "scale": 0.949
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -93.34,
     -0.11,
@@ -1972,7 +2026,7 @@
    "scale": 0.836
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     96.034,
     -0.265,
@@ -1994,7 +2048,7 @@
    "scale": 1.068
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -93.399,
     -0.403,
@@ -2005,7 +2059,7 @@
    "scale": 1.254
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     37.966,
     4.142,
@@ -2016,7 +2070,7 @@
    "scale": 1.007
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     83.042,
     3.249,
@@ -2049,7 +2103,7 @@
    "scale": 0.927
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     24.481,
     1.993,
@@ -2060,7 +2114,7 @@
    "scale": 0.997
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     1.218,
     1.448,
@@ -2071,7 +2125,7 @@
    "scale": 1.291
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     13.743,
     1.639,
@@ -2082,7 +2136,7 @@
    "scale": 1.183
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     107.636,
     9.732,
@@ -2093,7 +2147,7 @@
    "scale": 0.968
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     40.187,
     4.409,
@@ -2115,7 +2169,7 @@
    "scale": 0.958
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -101.033,
     2.219,
@@ -2148,7 +2202,7 @@
    "scale": 1.167
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     62.556,
     2.369,
@@ -2170,7 +2224,7 @@
    "scale": 1.177
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     82.232,
     0.823,
@@ -2192,7 +2246,7 @@
    "scale": 1.164
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -12.167,
     7.288,
@@ -2214,7 +2268,7 @@
    "scale": 1.093
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     107.151,
     3.861,
@@ -2225,7 +2279,7 @@
    "scale": 1.058
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     -24.613,
     0.406,
@@ -2236,7 +2290,7 @@
    "scale": 1.152
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     109.107,
     4.514,
@@ -2258,7 +2312,7 @@
    "scale": 1.095
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -63.022,
     1.687,
@@ -2269,7 +2323,7 @@
    "scale": 0.849
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     -82.652,
     -1.645,
@@ -2280,7 +2334,7 @@
    "scale": 1.062
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     83.354,
     0.083,
@@ -2291,7 +2345,7 @@
    "scale": 1.233
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -96.072,
     -0.375,
@@ -2324,7 +2378,7 @@
    "scale": 0.857
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     98.484,
     0.269,
@@ -2346,7 +2400,7 @@
    "scale": 0.861
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     -88.889,
     -1.253,
@@ -2357,7 +2411,7 @@
    "scale": 0.954
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     61.247,
     0.508,
@@ -2368,7 +2422,7 @@
    "scale": 1.168
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     105.372,
     2.546,
@@ -2379,7 +2433,7 @@
    "scale": 1.281
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     25.051,
     9.513,
@@ -2390,7 +2444,7 @@
    "scale": 0.944
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     40.979,
     1.083,
@@ -2401,7 +2455,7 @@
    "scale": 0.866
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -34.922,
     8.055,
@@ -2412,7 +2466,7 @@
    "scale": 0.924
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -114.678,
     7.995,
@@ -2423,7 +2477,7 @@
    "scale": 1.009
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -13.836,
     1.413,
@@ -2456,7 +2510,7 @@
    "scale": 1.292
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -21.353,
     9.21,
@@ -2467,7 +2521,7 @@
    "scale": 1.293
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     17.625,
     2.608,
@@ -2489,7 +2543,7 @@
    "scale": 0.822
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -39.906,
     6.111,
@@ -2500,7 +2554,7 @@
    "scale": 1.197
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     -55.252,
     2.913,
@@ -2511,7 +2565,7 @@
    "scale": 1.171
   },
   {
-   "model": "pine_a",
+   "model": "pine_b",
    "pos": [
     -22.076,
     0.609,
@@ -2544,7 +2598,7 @@
    "scale": 0.858
   },
   {
-   "model": "pine_b",
+   "model": "pine_c",
    "pos": [
     -100.992,
     2.429,

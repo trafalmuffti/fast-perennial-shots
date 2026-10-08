@@ -46,6 +46,8 @@ async function boot() {
   const hud = new Hud();
   renderer.loadModelPack(assets.pack);
   renderer.setEnvironment(assets.level.environment);
+  const t = assets.level.terrain;
+  renderer.setTerrain(assets.pack.blobs[t.blob], t.res, t.size);
 
   let game = null;
   let running = false; // game simulation active (pointer locked)

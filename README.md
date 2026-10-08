@@ -6,7 +6,21 @@ soldier in power armour with a regenerating energy shield. Your objective is to
 capture the flag of a wooden hill fort held by four defenders, each carrying a
 different weapon.
 
-The whole game ships at about **1.4 MB** against a 100 MB budget (`npm run check-size`).
+The whole game ships at about **2.5 MB** against a 100 MB budget (`npm run check-size`).
+
+## Graphics
+
+Stylised, not photoreal: all geometry is procedural (log-cabin walls, shingled
+roofs, slatted crates, stave barrels, bark-bumped palisade logs, jagged pines,
+lumpy boulders, instanced grass tufts and bushes). Instead of texture files,
+every vertex carries a **material id** and the fragment shader layers
+procedural detail on top of the vertex colour: wood grain and plank seams,
+bark fissures, foliage speckle, cloth weave, metal scratches, stone pitting.
+Lighting is a sun with a 2048² shadow map, hemispheric ambient, Blinn-Phong
+specular with a small Fresnel term, wrap lighting for foliage and skin, and
+ground-contact darkening computed from the terrain heightfield. The sky is a
+gradient with a sun disc and noise-based cumulus. Flags and grass are animated
+in the vertex shader.
 
 ## Running
 
@@ -82,6 +96,7 @@ tools/
   levels/hillfort.mjs   level 1 definition (terrain, layout, enemies)
   lib/mesh.mjs          mesh builder + model pack writer
   lib/props.mjs         reusable procedural models (soldiers, guns, buildings, props)
+  src/materials.js      material ids shared by the build tools and the shader
   serve.mjs             zero-dependency static server
   check-size.mjs        enforces the 100 MB download budget
 ```
@@ -91,9 +106,11 @@ tools/
 Each level's models live in their own `models.bin`, separate from the code and
 the layout. The file starts with a JSON header that lists each model's
 index range, bounds, collision boxes, and metadata such as muzzle points.
-Packed vertex data follows (20 bytes per vertex: position, snorm8 normal,
-unorm8 colour with a "tintable" flag in alpha), then 32‑bit indices and the
-terrain heightfield. The loader streams `level.json` and `models.bin` and shows
+Packed vertex data follows (20 bytes per vertex: position, snorm8 normal with
+the material id in the fourth byte, unorm8 colour with a "tintable" flag in
+alpha), then 32‑bit indices and the terrain heightfield. Grass and bushes are
+not stored as instances: `level.json` carries `scatter` rules and the game
+places them deterministically at load time. The loader streams `level.json` and `models.bin` and shows
 *Downloaded X MB of Y MB*.
 
 ## Extending to more levels

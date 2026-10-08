@@ -7,11 +7,11 @@
       "files": [
         {
           "path": "levels/hillfort/level.json",
-          "bytes": 33722
+          "bytes": 34283
         },
         {
           "path": "levels/hillfort/models.bin",
-          "bytes": 1271068
+          "bytes": 2364216
         }
       ]
     }
